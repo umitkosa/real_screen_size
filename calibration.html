@@ -289,6 +289,11 @@
             padding: 8px 20px; border: 1px solid rgba(255,204,0,0.3); border-radius: 6px; background: rgba(255,204,0,0.08);
         }
         .instructions { font-size: 0.75rem; color: #666; margin-top: 8px; text-align: center; line-height: 1.6; }
+        .accuracy-note {
+            font-size: 0.75rem; color: #aaa; text-align: center; margin: 8px 0;
+            padding: 6px 16px; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+            background: rgba(255,255,255,0.03); line-height: 1.5;
+        }
 
         .style-panel {
             display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; margin-top: 8px;
@@ -589,6 +594,7 @@
         </div>
 
         <p class="warning-note" id="t_warning"></p>
+        <p class="accuracy-note" id="t_accuracyNote1"></p>
 
         <button class="btn-confirm" id="btnConfirm" onclick="confirmCalibration()"></button>
 
@@ -637,6 +643,7 @@
         <!-- Screen Catalog -->
         <div class="catalog-section" id="catalogSection">
             <div class="catalog-title" id="t_catTitle"></div>
+            <p class="accuracy-note" id="t_accuracyNote2"></p>
             <div class="catalog-row">
                 <span class="catalog-label" id="t_catBrand"></span>
                 <select class="catalog-select" id="catBrand" onchange="onBrandChange()">
@@ -723,6 +730,7 @@
                 colors: { sari: 'Sari', beyaz: 'Beyaz', cyan: 'Cyan', kirmizi: 'Kirmizi', yesil: 'Yesil' },
                 manualPpmTitle: 'Degerimi zaten biliyorum:',
                 manualPpmBtn: 'ONAYLA',
+                accuracyNote: 'Onizleme dogrulugu kalibrasyonunuza baglidir. Tipik kullanimda %95+ hassasiyet beklenir.',
                 catTitle: 'Ekran Katalogu',
                 catBrand: 'Marka:',
                 catModel: 'Model:',
@@ -762,6 +770,7 @@
                 colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' },
                 manualPpmTitle: 'I already know my value:',
                 manualPpmBtn: 'CONFIRM',
+                accuracyNote: 'Preview accuracy depends on your calibration. Typical usage yields 95%+ precision.',
                 catTitle: 'Screen Catalog',
                 catBrand: 'Brand:',
                 catModel: 'Model:',
@@ -805,6 +814,7 @@
                 colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' },
                 manualPpmTitle: 'I already know my value:',
                 manualPpmBtn: 'CONFIRM',
+                accuracyNote: 'Preview accuracy depends on your calibration. Typical usage yields 95%+ precision.',
                 catTitle: 'Screen Catalog',
                 catBrand: 'Brand:',
                 catModel: 'Model:',
@@ -844,6 +854,7 @@
                 colors: { sari: 'Gelb', beyaz: 'Weiss', cyan: 'Cyan', kirmizi: 'Rot', yesil: 'Gruen' },
                 manualPpmTitle: 'Ich kenne meinen Wert:',
                 manualPpmBtn: 'BESTAETIGEN',
+                accuracyNote: 'Die Vorschaugenauigkeit haengt von Ihrer Kalibrierung ab. Im typischen Gebrauch wird eine Praezision von ueber 95% erreicht.',
                 catTitle: 'Bildschirmkatalog', catBrand: 'Marke:', catModel: 'Modell:', catSelectBrand: 'Auswaehlen', catSelectModel: 'Auswaehlen', catManualEntry: 'Manuelle Eingabe', catManualLabel: 'Groesse:', catPreviewLabel: 'Vorschau in Originalgroesse (auf Ihrem PC):', catInfo: 'Displaygroesse:', catInfoOnYour: 'auf Ihrem Bildschirm', catOverflowScroll: 'Horizontal scrollen, um die volle Groesse zu sehen.', catCustom: 'Benutzerdefiniert'
             },
             fr: {
@@ -872,6 +883,7 @@
                 colors: { sari: 'Jaune', beyaz: 'Blanc', cyan: 'Cyan', kirmizi: 'Rouge', yesil: 'Vert' },
                 manualPpmTitle: 'Je connais deja ma valeur:',
                 manualPpmBtn: 'CONFIRMER',
+                accuracyNote: 'La precision de l\'apercu depend de votre calibration. En utilisation typique, une precision de plus de 95% est attendue.',
                 catTitle: 'Catalogue d\'Ecrans', catBrand: 'Marque:', catModel: 'Modele:', catSelectBrand: 'Choisir', catSelectModel: 'Choisir', catManualEntry: 'Saisie manuelle', catManualLabel: 'Taille:', catPreviewLabel: 'Apercu en taille reelle (sur votre ecran PC):', catInfo: 'Taille ecran:', catInfoOnYour: 'sur votre ecran', catOverflowScroll: 'Faites defiler horizontalement pour voir la taille reelle.', catCustom: 'Personnalise'
             },
             es: {
@@ -900,6 +912,7 @@
                 colors: { sari: 'Amarillo', beyaz: 'Blanco', cyan: 'Cian', kirmizi: 'Rojo', yesil: 'Verde' },
                 manualPpmTitle: 'Ya conozco mi valor:',
                 manualPpmBtn: 'CONFIRMAR',
+                accuracyNote: 'La precision de la vista previa depende de su calibracion. En uso tipico se obtiene una precision superior al 95%.',
                 catTitle: 'Catalogo de Pantallas', catBrand: 'Marca:', catModel: 'Modelo:', catSelectBrand: 'Seleccionar', catSelectModel: 'Seleccionar', catManualEntry: 'Entrada manual', catManualLabel: 'Tamano:', catPreviewLabel: 'Vista previa a tamano real (en su pantalla PC):', catInfo: 'Tamano de pantalla:', catInfoOnYour: 'en su pantalla', catOverflowScroll: 'Desplacese horizontalmente para ver el tamano completo.', catCustom: 'Personalizado'
             }
         };
@@ -983,6 +996,8 @@
             document.getElementById('copyToast').textContent = T('copied');
             document.getElementById('t_manualPpmTitle').textContent = T('manualPpmTitle');
             document.getElementById('t_manualPpmBtn').textContent = T('manualPpmBtn');
+            document.getElementById('t_accuracyNote1').textContent = T('accuracyNote');
+            document.getElementById('t_accuracyNote2').textContent = T('accuracyNote');
 
             // Catalog translations
             const catTitle = document.getElementById('t_catTitle');
