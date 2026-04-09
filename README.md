@@ -1,4 +1,4 @@
-# screen-real-size
+# real_screen_size
 
 **Calibrate your screen's real pixel/mm ratio using a credit card.**
 
@@ -6,7 +6,7 @@ Ever designed a UI for a small screen (Nextion, Raspberry Pi, etc.) and realized
 
 ## Live Demo
 
-**[Try it now](https://umitkosa.github.io/screen-real-size/)**
+**[Try it now](https://umitkosa.github.io/real_screen_size/)**
 
 No download, no install. Just open the link, place your credit card on the screen, and calibrate.
 
@@ -36,7 +36,7 @@ That's it. Claude Code now knows your screen's exact pixel/mm ratio and will des
 Clone this repo and use it as a Claude Code skill:
 
 ```bash
-git clone https://github.com/umitkosa/screen-real-size.git
+git clone https://github.com/umitkosa/real_screen_size.git
 ```
 
 Then invoke with `/real-size` in Claude Code.

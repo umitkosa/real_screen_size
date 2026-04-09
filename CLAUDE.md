@@ -1,11 +1,11 @@
-# screen-real-size
+# real_screen_size
 
 ## Proje Ozeti
 Kredi karti referansiyla (ISO 7810: 85.6x53.98mm) PC ekraninin gercek pixel/mm oranini hesaplayan kalibrasyon araci. Kullanici kredi kartini ekrana koyar, slider ile cerceve boyutunu ayarlar, onaylar ve Claude Code'a yapistirmak icin otomatik prompt olusturulur.
 
 ## Repo
-- GitHub: https://github.com/umitkosa/screen-real-size
-- GitHub Pages: https://umitkosa.github.io/screen-real-size/
+- GitHub: https://github.com/umitkosa/real_screen_size
+- GitHub Pages: https://umitkosa.github.io/real_screen_size/
 - Yazar: Umit KOSA (@umitkosa)
 
 ## Dosya Yapisi
