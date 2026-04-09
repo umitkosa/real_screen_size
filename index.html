@@ -38,10 +38,16 @@
 
         .calibration-area {
             display: flex;
-            align-items: center;
-            gap: 20px;
+            align-items: flex-start;
+            gap: 16px;
             margin-top: 56px;
             margin-bottom: 8px;
+        }
+        .calibration-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
         }
 
         .card-container {
@@ -107,16 +113,15 @@
 
         .slider-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             gap: 12px;
         }
 
         .speed-buttons {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 6px;
-            margin-top: 8px;
         }
 
         .speed-btn {
@@ -141,51 +146,42 @@
 
         .slider-wrapper {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
-            height: 300px;
+            gap: 8px;
             position: relative;
         }
 
         .slider-track-line {
-            position: absolute;
-            top: 28px;
-            bottom: 0;
-            left: 50%;
-            width: 2px;
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
-            transform: translateX(-50%);
-            border-radius: 1px;
-            z-index: 0;
-            pointer-events: none;
+            display: none;
         }
 
         .slider-label {
             font-size: 0.75rem;
             color: #aaa;
-            margin-bottom: 8px;
         }
 
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
-            writing-mode: vertical-lr;
-            direction: rtl;
-            height: 260px;
-            width: 36px;
+            writing-mode: horizontal-tb;
+            direction: ltr;
+            width: 400px;
+            height: 36px;
             background: transparent;
             cursor: pointer;
             position: relative;
             z-index: 1;
         }
 
-        input[type="range"]::-webkit-slider-track { width: 6px; background: #333; border-radius: 3px; }
+        input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: linear-gradient(to right, rgba(255,255,255,0.05), rgba(255,255,255,0.25)); border-radius: 1px; }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
             background: var(--accent); border: 2px solid var(--accent);
             box-shadow: 0 0 10px rgba(255,255,255,0.3); cursor: grab;
+            margin-top: -11px;
         }
-        input[type="range"]::-moz-range-track { width: 6px; background: #333; border-radius: 3px; }
+        input[type="range"]::-moz-range-track { height: 2px; background: linear-gradient(to right, rgba(255,255,255,0.05), rgba(255,255,255,0.25)); border-radius: 1px; }
         input[type="range"]::-moz-range-thumb {
             width: 24px; height: 24px; border-radius: 50%;
             background: var(--accent); border: 2px solid var(--accent);
@@ -203,8 +199,9 @@
         }
         .btn-confirm:hover { background: #00b8d9; transform: scale(1.03); box-shadow: 0 0 20px rgba(0,212,255,0.3); }
 
-        .result-screen { display: none; text-align: center; align-items: center; flex-direction: column; }
+        .result-screen { display: none; text-align: center; align-items: center; flex-direction: column; padding: 40px 0; }
         .result-screen.active { display: flex; }
+        body.result-mode { justify-content: flex-start; min-height: auto; }
         .calibration-screen.hidden { display: none !important; }
 
         .result-value { font-size: 3rem; font-weight: bold; color: #00d4ff; font-family: monospace; margin: 16px 0; }
@@ -294,7 +291,7 @@
         .instructions { font-size: 0.75rem; color: #666; margin-top: 8px; text-align: center; line-height: 1.6; }
 
         .style-panel {
-            display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; margin-top: -43px;
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; margin-top: 8px;
             padding: 12px 20px; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; background: rgba(255,255,255,0.03);
         }
         .style-row { display: flex; align-items: center; gap: 12px; }
@@ -351,6 +348,169 @@
             text-align: center;
         }
 
+        .manual-ppm-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            gap: 8px;
+            align-self: center;
+        }
+        .manual-ppm-title {
+            font-size: 0.72rem;
+            color: #888;
+            text-align: center;
+            line-height: 1.4;
+            max-width: 130px;
+        }
+        .manual-ppm-input {
+            width: 110px;
+            padding: 8px 10px;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #e0e0e0;
+            font-family: monospace;
+            text-align: center;
+        }
+        .manual-ppm-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .manual-ppm-unit {
+            font-size: 0.65rem;
+            color: #666;
+        }
+        .btn-manual-confirm {
+            padding: 7px 24px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid var(--accent);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .btn-manual-confirm:hover {
+            background: rgba(0,212,255,0.1);
+        }
+
+        /* Screen Catalog */
+        .catalog-section {
+            margin-top: 32px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            min-width: 480px;
+            width: auto;
+        }
+        .catalog-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .catalog-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .catalog-label {
+            font-size: 0.8rem;
+            color: #888;
+            min-width: 60px;
+        }
+        .catalog-select {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #e0e0e0;
+            cursor: pointer;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .catalog-select:focus { outline: none; border-color: var(--accent); }
+        .catalog-select option { background: #1a1a2e; color: #e0e0e0; }
+        .catalog-manual {
+            display: none;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .catalog-manual.active { display: flex; }
+        .catalog-manual input {
+            width: 80px;
+            padding: 8px 10px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #e0e0e0;
+            font-family: monospace;
+            text-align: center;
+        }
+        .catalog-manual input:focus { outline: none; border-color: var(--accent); }
+        .catalog-manual .unit { font-size: 0.75rem; color: #888; }
+        .catalog-info {
+            display: none;
+            text-align: center;
+            margin: 12px 0;
+            font-size: 0.78rem;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .catalog-info.active { display: block; }
+        .catalog-info strong { color: var(--accent); font-family: monospace; }
+        .catalog-preview-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 16px;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        .catalog-preview-container.active { display: flex; }
+        .catalog-preview-label { font-size: 0.7rem; color: #888; margin-bottom: 8px; }
+        .catalog-preview {
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            background: rgba(255,255,255,0.03);
+            position: relative;
+            transition: width 0.3s, height 0.3s;
+            overflow: hidden;
+        }
+        .catalog-preview-inner {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            width: 100%;
+        }
+        .catalog-preview-res { font-size: 0.7rem; color: var(--accent); font-family: monospace; opacity: 0.6; }
+        .catalog-preview-mm { font-size: 0.6rem; color: #888; font-family: monospace; margin-top: 2px; }
+        .catalog-preview-name { font-size: 0.6rem; color: #aaa; margin-top: 4px; }
+        .catalog-overflow-note {
+            display: none;
+            font-size: 0.7rem;
+            color: #ffcc00;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .catalog-overflow-note.active { display: block; }
+
         .copy-toast {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
             background: #00d4ff; color: #1a1a2e; padding: 10px 24px; border-radius: 8px;
@@ -367,23 +527,32 @@
         <p class="subtitle" id="t_subtitle"></p>
 
         <div class="calibration-area">
-            <div class="card-container">
-                <div class="credit-card" id="creditCard">
-                    <span class="card-label">ISO 7810</span>
+            <div class="calibration-left">
+                <div class="card-container">
+                    <div class="credit-card" id="creditCard">
+                        <span class="card-label">ISO 7810</span>
+                    </div>
+                    <div class="card-guide-text" id="cardGuideText"></div>
                 </div>
-                <div class="card-guide-text" id="cardGuideText"></div>
+
+                <div class="slider-container">
+                    <div class="slider-wrapper">
+                        <span class="slider-label" id="t_size"></span>
+                        <div class="slider-track-line"></div>
+                        <input type="range" id="sizeSlider" min="150" max="600" value="434" step="1">
+                    </div>
+                    <div class="speed-buttons">
+                        <button class="speed-btn active" id="btn1x" onclick="setSpeed(1)">1x</button>
+                        <button class="speed-btn" id="btn5x" onclick="setSpeed(0.2)">1/5x</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="slider-container">
-                <div class="slider-wrapper">
-                    <span class="slider-label" id="t_size"></span>
-                    <div class="slider-track-line"></div>
-                    <input type="range" id="sizeSlider" min="150" max="600" value="320" step="1">
-                </div>
-                <div class="speed-buttons">
-                    <button class="speed-btn active" id="btn1x" onclick="setSpeed(1)">1x</button>
-                    <button class="speed-btn" id="btn5x" onclick="setSpeed(0.2)">1/5x</button>
-                </div>
+            <div class="manual-ppm-panel">
+                <div class="manual-ppm-title" id="t_manualPpmTitle"></div>
+                <input type="number" class="manual-ppm-input" id="manualPpmInput" placeholder="3.78" min="0.5" max="20" step="0.01">
+                <div class="manual-ppm-unit">pixel/mm</div>
+                <button class="btn-manual-confirm" id="t_manualPpmBtn" onclick="confirmManualPpm()"></button>
             </div>
         </div>
 
@@ -465,6 +634,42 @@
             <p class="explanation-text" id="t_explText"></p>
         </div>
 
+        <!-- Screen Catalog -->
+        <div class="catalog-section" id="catalogSection">
+            <div class="catalog-title" id="t_catTitle"></div>
+            <div class="catalog-row">
+                <span class="catalog-label" id="t_catBrand"></span>
+                <select class="catalog-select" id="catBrand" onchange="onBrandChange()">
+                    <option value="">--</option>
+                </select>
+            </div>
+            <div class="catalog-row">
+                <span class="catalog-label" id="t_catModel"></span>
+                <select class="catalog-select" id="catModel" onchange="onModelChange()" disabled>
+                    <option value="">--</option>
+                </select>
+            </div>
+            <div class="catalog-manual" id="catManual">
+                <span class="catalog-label" id="t_catManualLabel"></span>
+                <input type="number" id="catManualW" placeholder="mm" min="1" max="500" step="0.01" oninput="onManualInput()">
+                <span class="unit">x</span>
+                <input type="number" id="catManualH" placeholder="mm" min="1" max="500" step="0.01" oninput="onManualInput()">
+                <span class="unit">mm</span>
+            </div>
+            <div class="catalog-info" id="catInfo"></div>
+            <div class="catalog-preview-container" id="catPreviewContainer">
+                <div class="catalog-preview-label" id="t_catPreviewLabel"></div>
+                <div class="catalog-preview" id="catPreview">
+                    <div class="catalog-preview-inner">
+                        <div class="catalog-preview-res" id="catPreviewRes"></div>
+                        <div class="catalog-preview-mm" id="catPreviewMm"></div>
+                        <div class="catalog-preview-name" id="catPreviewName"></div>
+                    </div>
+                </div>
+                <div class="catalog-overflow-note" id="catOverflow"></div>
+            </div>
+        </div>
+
         <p class="credit-footer">Prepared by Umit KOSA</p>
     </div>
 
@@ -481,10 +686,10 @@
         const pxWidthEl = document.getElementById('pxWidth');
         const pxHeightEl = document.getElementById('pxHeight');
 
-        let currentWidthPx = 320;
+        let currentWidthPx = 434;
         let pixelPerMm = 0;
         let speed = 1;
-        let baseWidth = 320;
+        let baseWidth = 434;
         const SLIDER_MID = (150 + 600) / 2;
         let currentTheme = 'dark-blue';
         let currentLang = 'tr';
@@ -515,7 +720,21 @@
                 explText: (v) => `Bu deger, ekraninizda 1 milimetrenin kac piksele karsilik geldigini gosterir. Ornegin <strong>${v}</strong> demek, ekraninizdaki her 1mm icinde yaklasik <strong>${v}</strong> piksel var demektir.<br><br>Bu sayede Claude, sizin icin tasarladiginiz ekranlarin gercek boyutlarini bilgisayar ekraninizda birebir gosterebilir. Artik "bu buton 10mm olsun" dediginizde, gercekten 10mm olacak!<br><br>Bu degeri Claude Code'a bildirdiginizde, bundan sonraki tum UI projeleriniz (Nextion, Raspberry Pi, vb.) gercek ekraninizin mm olculerine birebir uygun sekilde tasarlanacaktir. Tek seferlik bir kalibrasyon, sinirsiz hassasiyet!`,
                 copied: 'Kopyalandi!',
                 prompt: (ppm, mpp, w, h, ex) => `Ekran kalibrasyonum: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Bundan sonra bana mm cinsinden boyut verdigimde veya bir ekran icin UI tasarladigimda, bu pixel/mm oranini kullanarak ekranimdaki gercek boyutlari hesapla. Ornegin 10mm = ${ex}px benim ekranimda.`,
-                colors: { sari: 'Sari', beyaz: 'Beyaz', cyan: 'Cyan', kirmizi: 'Kirmizi', yesil: 'Yesil' }
+                colors: { sari: 'Sari', beyaz: 'Beyaz', cyan: 'Cyan', kirmizi: 'Kirmizi', yesil: 'Yesil' },
+                manualPpmTitle: 'Degerimi zaten biliyorum:',
+                manualPpmBtn: 'ONAYLA',
+                catTitle: 'Ekran Katalogu',
+                catBrand: 'Marka:',
+                catModel: 'Model:',
+                catSelectBrand: 'Seciniz',
+                catSelectModel: 'Seciniz',
+                catManualEntry: 'Manuel Giris',
+                catManualLabel: 'Boyut:',
+                catPreviewLabel: 'Gercek boyutlu onizleme (PC ekraninizda):',
+                catInfo: 'Ekran boyutu:',
+                catInfoOnYour: 'ekraninizda',
+                catOverflowScroll: 'Tam boyutu gormek icin yatay kaydiriniz.',
+                catCustom: 'Ozel'
             },
             en: {
                 title: 'Screen Calibration Tool',
@@ -540,7 +759,21 @@
                 explText: (v) => `This value shows how many pixels correspond to 1 millimeter on your screen. For example, <strong>${v}</strong> means there are approximately <strong>${v}</strong> pixels per 1mm on your display.<br><br>This allows Claude to show the real dimensions of the screens you design on your computer display. When you say "make this button 10mm", it will actually be 10mm!<br><br>Once you share this value with Claude Code, all your future UI projects (Nextion, Raspberry Pi, etc.) will be designed to match the exact mm dimensions of your real screen. One-time calibration, unlimited precision!`,
                 copied: 'Copied!',
                 prompt: (ppm, mpp, w, h, ex) => `My screen calibration: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. From now on, when I give you dimensions in mm or when designing UI for a screen, use this pixel/mm ratio to calculate real sizes on my display. For example 10mm = ${ex}px on my screen.`,
-                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' }
+                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' },
+                manualPpmTitle: 'I already know my value:',
+                manualPpmBtn: 'CONFIRM',
+                catTitle: 'Screen Catalog',
+                catBrand: 'Brand:',
+                catModel: 'Model:',
+                catSelectBrand: 'Select',
+                catSelectModel: 'Select',
+                catManualEntry: 'Manual Entry',
+                catManualLabel: 'Size:',
+                catPreviewLabel: 'Real-size preview (on your PC screen):',
+                catInfo: 'Screen size:',
+                catInfoOnYour: 'on your display',
+                catOverflowScroll: 'Scroll horizontally to see full size.',
+                catCustom: 'Custom'
             },
             us: {
                 title: 'Screen Calibration Tool',
@@ -569,7 +802,21 @@
                     const pixPerInch = ppi;
                     return `My screen calibration: pixel/mm: ${ppm}, pixel/inch: ${pixPerInch}, mm/pixel: ${mpp}, card: ${w}x${h}px. I use inches as my unit. From now on, when I give you dimensions in inches or when designing UI for a screen, use this pixel/inch ratio to calculate real sizes on my display. For example 1 inch = ${pixPerInch}px on my screen, 0.5 inch = ${(pixPerInch/2).toFixed(0)}px.`;
                 },
-                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' }
+                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' },
+                manualPpmTitle: 'I already know my value:',
+                manualPpmBtn: 'CONFIRM',
+                catTitle: 'Screen Catalog',
+                catBrand: 'Brand:',
+                catModel: 'Model:',
+                catSelectBrand: 'Select',
+                catSelectModel: 'Select',
+                catManualEntry: 'Manual Entry',
+                catManualLabel: 'Size:',
+                catPreviewLabel: 'Real-size preview (on your PC screen):',
+                catInfo: 'Screen size:',
+                catInfoOnYour: 'on your display',
+                catOverflowScroll: 'Scroll horizontally to see full size.',
+                catCustom: 'Custom'
             },
             de: {
                 title: 'Bildschirm-Kalibrierungstool',
@@ -594,7 +841,10 @@
                 explText: (v) => `Dieser Wert zeigt, wie viele Pixel 1 Millimeter auf Ihrem Bildschirm entsprechen. Zum Beispiel bedeutet <strong>${v}</strong>, dass es ungefaehr <strong>${v}</strong> Pixel pro 1mm auf Ihrem Display gibt.<br><br>So kann Claude die realen Abmessungen der Bildschirme, die Sie entwerfen, auf Ihrem Computerbildschirm originalgetreu darstellen.<br><br>Sobald Sie diesen Wert mit Claude Code teilen, werden alle Ihre zukuenftigen UI-Projekte (Nextion, Raspberry Pi usw.) exakt an die mm-Masse Ihres realen Bildschirms angepasst. Einmalige Kalibrierung, unbegrenzte Praezision!`,
                 copied: 'Kopiert!',
                 prompt: (ppm, mpp, w, h, ex) => `Meine Bildschirmkalibrierung: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Verwende ab jetzt dieses pixel/mm-Verhaeltnis, wenn ich dir mm-Masse gebe oder UI fuer einen Bildschirm entwerfe. Beispiel: 10mm = ${ex}px auf meinem Bildschirm.`,
-                colors: { sari: 'Gelb', beyaz: 'Weiss', cyan: 'Cyan', kirmizi: 'Rot', yesil: 'Gruen' }
+                colors: { sari: 'Gelb', beyaz: 'Weiss', cyan: 'Cyan', kirmizi: 'Rot', yesil: 'Gruen' },
+                manualPpmTitle: 'Ich kenne meinen Wert:',
+                manualPpmBtn: 'BESTAETIGEN',
+                catTitle: 'Bildschirmkatalog', catBrand: 'Marke:', catModel: 'Modell:', catSelectBrand: 'Auswaehlen', catSelectModel: 'Auswaehlen', catManualEntry: 'Manuelle Eingabe', catManualLabel: 'Groesse:', catPreviewLabel: 'Vorschau in Originalgroesse (auf Ihrem PC):', catInfo: 'Displaygroesse:', catInfoOnYour: 'auf Ihrem Bildschirm', catOverflowScroll: 'Horizontal scrollen, um die volle Groesse zu sehen.', catCustom: 'Benutzerdefiniert'
             },
             fr: {
                 title: 'Outil de Calibration d\'Ecran',
@@ -619,7 +869,10 @@
                 explText: (v) => `Cette valeur indique combien de pixels correspondent a 1 millimetre sur votre ecran. Par exemple, <strong>${v}</strong> signifie qu'il y a environ <strong>${v}</strong> pixels par 1mm sur votre affichage.<br><br>Cela permet a Claude d'afficher les dimensions reelles des ecrans que vous concevez. Quand vous dites "ce bouton fait 10mm", il fera vraiment 10mm !<br><br>Une fois cette valeur partagee avec Claude Code, tous vos futurs projets UI (Nextion, Raspberry Pi, etc.) seront concus aux dimensions mm exactes de votre ecran reel. Une calibration unique, une precision illimitee !`,
                 copied: 'Copie !',
                 prompt: (ppm, mpp, w, h, ex) => `Ma calibration d'ecran: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Desormais, quand je donne des dimensions en mm ou conçois une UI pour un ecran, utilise ce ratio pixel/mm pour calculer les tailles reelles. Exemple: 10mm = ${ex}px sur mon ecran.`,
-                colors: { sari: 'Jaune', beyaz: 'Blanc', cyan: 'Cyan', kirmizi: 'Rouge', yesil: 'Vert' }
+                colors: { sari: 'Jaune', beyaz: 'Blanc', cyan: 'Cyan', kirmizi: 'Rouge', yesil: 'Vert' },
+                manualPpmTitle: 'Je connais deja ma valeur:',
+                manualPpmBtn: 'CONFIRMER',
+                catTitle: 'Catalogue d\'Ecrans', catBrand: 'Marque:', catModel: 'Modele:', catSelectBrand: 'Choisir', catSelectModel: 'Choisir', catManualEntry: 'Saisie manuelle', catManualLabel: 'Taille:', catPreviewLabel: 'Apercu en taille reelle (sur votre ecran PC):', catInfo: 'Taille ecran:', catInfoOnYour: 'sur votre ecran', catOverflowScroll: 'Faites defiler horizontalement pour voir la taille reelle.', catCustom: 'Personnalise'
             },
             es: {
                 title: 'Herramienta de Calibracion de Pantalla',
@@ -644,7 +897,10 @@
                 explText: (v) => `Este valor muestra cuantos pixeles corresponden a 1 milimetro en su pantalla. Por ejemplo, <strong>${v}</strong> significa que hay aproximadamente <strong>${v}</strong> pixeles por 1mm en su pantalla.<br><br>Esto permite a Claude mostrar las dimensiones reales de las pantallas que disena. Cuando dice "este boton debe ser de 10mm", realmente sera de 10mm!<br><br>Una vez que comparta este valor con Claude Code, todos sus futuros proyectos UI (Nextion, Raspberry Pi, etc.) se disenaran con las medidas mm exactas de su pantalla real. Una calibracion, precision ilimitada!`,
                 copied: 'Copiado!',
                 prompt: (ppm, mpp, w, h, ex) => `Mi calibracion de pantalla: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. A partir de ahora, cuando doy dimensiones en mm o diseno UI para una pantalla, usa esta relacion pixel/mm para calcular tamanos reales. Ejemplo: 10mm = ${ex}px en mi pantalla.`,
-                colors: { sari: 'Amarillo', beyaz: 'Blanco', cyan: 'Cian', kirmizi: 'Rojo', yesil: 'Verde' }
+                colors: { sari: 'Amarillo', beyaz: 'Blanco', cyan: 'Cian', kirmizi: 'Rojo', yesil: 'Verde' },
+                manualPpmTitle: 'Ya conozco mi valor:',
+                manualPpmBtn: 'CONFIRMAR',
+                catTitle: 'Catalogo de Pantallas', catBrand: 'Marca:', catModel: 'Modelo:', catSelectBrand: 'Seleccionar', catSelectModel: 'Seleccionar', catManualEntry: 'Entrada manual', catManualLabel: 'Tamano:', catPreviewLabel: 'Vista previa a tamano real (en su pantalla PC):', catInfo: 'Tamano de pantalla:', catInfoOnYour: 'en su pantalla', catOverflowScroll: 'Desplacese horizontalmente para ver el tamano completo.', catCustom: 'Personalizado'
             }
         };
 
@@ -725,6 +981,19 @@
             document.getElementById('t_explText').innerHTML = T('explText')(v);
 
             document.getElementById('copyToast').textContent = T('copied');
+            document.getElementById('t_manualPpmTitle').textContent = T('manualPpmTitle');
+            document.getElementById('t_manualPpmBtn').textContent = T('manualPpmBtn');
+
+            // Catalog translations
+            const catTitle = document.getElementById('t_catTitle');
+            if (catTitle) {
+                catTitle.textContent = T('catTitle');
+                document.getElementById('t_catBrand').textContent = T('catBrand');
+                document.getElementById('t_catModel').textContent = T('catModel');
+                document.getElementById('t_catManualLabel').textContent = T('catManualLabel');
+                document.getElementById('t_catPreviewLabel').textContent = T('catPreviewLabel');
+                populateBrandSelect();
+            }
 
             // Render color picker label
             renderColorPicker(t.frameColors);
@@ -816,6 +1085,11 @@
             creditCard.style.height = heightPx + 'px';
             pxWidthEl.textContent = innerWidth;
             pxHeightEl.textContent = innerHeight;
+            // Update manual ppm input if user hasn't focused it
+            const manualInput = document.getElementById('manualPpmInput');
+            if (document.activeElement !== manualInput) {
+                manualInput.value = (innerWidth / CARD_WIDTH_MM).toFixed(2);
+            }
         }
 
         function setSpeed(newSpeed) {
@@ -841,6 +1115,27 @@
                 e.preventDefault(); slider.value = Math.min(parseInt(slider.value) + 1, parseInt(slider.max)); updateCard();
             } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
                 e.preventDefault(); slider.value = Math.max(parseInt(slider.value) - 1, parseInt(slider.min)); updateCard();
+            }
+        });
+
+        // Manual ppm input: arrows/typing update card and slider
+        document.getElementById('manualPpmInput').addEventListener('input', function() {
+            const val = parseFloat(this.value);
+            if (val && val >= 0.5 && val <= 20) {
+                const newWidth = Math.round(CARD_WIDTH_MM * val) + FRAME_TOTAL;
+                const clamped = Math.max(150, Math.min(600, newWidth));
+                currentWidthPx = clamped;
+                slider.value = clamped;
+                speed = 1;
+                document.getElementById('btn1x').classList.add('active');
+                document.getElementById('btn5x').classList.remove('active');
+                const innerWidth = clamped - FRAME_TOTAL;
+                const innerHeight = Math.round(innerWidth / ASPECT_RATIO);
+                const heightPx = innerHeight + FRAME_TOTAL;
+                creditCard.style.width = clamped + 'px';
+                creditCard.style.height = heightPx + 'px';
+                pxWidthEl.textContent = innerWidth;
+                pxHeightEl.textContent = innerHeight;
             }
         });
 
@@ -874,6 +1169,8 @@
 
             document.getElementById('calibrationScreen').classList.add('hidden');
             document.getElementById('resultScreen').classList.add('active');
+            document.body.classList.add('result-mode');
+            window.scrollTo(0, 0);
         }
 
         function copyResult() {
@@ -903,9 +1200,162 @@
             });
         }
 
+        function confirmManualPpm() {
+            const val = parseFloat(document.getElementById('manualPpmInput').value);
+            if (!val || val < 0.5 || val > 20) return;
+            pixelPerMm = val;
+            const mmPerPixel = 1 / val;
+            const eqCardW = Math.round(CARD_WIDTH_MM * val);
+            const eqCardH = Math.round(CARD_HEIGHT_MM * val);
+            currentWidthPx = eqCardW + FRAME_TOTAL;
+
+            document.getElementById('resultRatio').textContent = pixelPerMm.toFixed(4);
+            document.getElementById('resultPxW').textContent = eqCardW;
+            document.getElementById('resultPxH').textContent = eqCardH;
+            document.getElementById('resultMmPerPx').textContent = mmPerPixel.toFixed(4);
+
+            applyTranslations();
+
+            const t = themes[currentTheme];
+            document.querySelector('.result-screen h1').style.color = t.accent;
+            document.getElementById('resultRatio').style.color = t.accent;
+            document.querySelector('.btn-copy').style.borderColor = t.accent;
+            document.querySelector('.btn-copy').style.color = t.accent;
+            document.querySelector('.explanation-title').style.color = t.accent;
+            document.querySelectorAll('.explanation-text strong').forEach(s => s.style.color = t.accent);
+
+            const exx = (pixelPerMm * 10).toFixed(0);
+            document.getElementById('promptText').textContent = T('prompt')(pixelPerMm.toFixed(4), mmPerPixel.toFixed(4), eqCardW, eqCardH, exx);
+
+            document.getElementById('calibrationScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+            document.body.classList.add('result-mode');
+            window.scrollTo(0, 0);
+        }
+
         function recalibrate() {
             document.getElementById('calibrationScreen').classList.remove('hidden');
             document.getElementById('resultScreen').classList.remove('active');
+            document.body.classList.remove('result-mode');
+            window.scrollTo(0, 0);
+        }
+
+        // ---- SCREEN CATALOG DATA ----
+        const screenCatalog = {
+            'Waveshare': [
+                { model: '1.3" LCD HAT', res: '240x240', w: 23.40, h: 23.40 },
+                { model: '1.44" LCD HAT', res: '128x128', w: 25.50, h: 25.50 },
+                { model: '2.4" LCD Module', res: '320x240', w: 48.96, h: 36.72 },
+                { model: '2.8" Touch LCD', res: '320x240', w: 57.60, h: 43.20 },
+                { model: '3.5" RPi LCD (A)', res: '480x320', w: 73.44, h: 48.96 },
+                { model: '4.3" HDMI LCD (B)', res: '800x480', w: 95.04, h: 53.86 },
+                { model: '5" HDMI LCD', res: '800x480', w: 108.00, h: 64.80 },
+                { model: '7" HDMI LCD (H)', res: '1024x600', w: 154.21, h: 85.92 },
+                { model: '7.9" HDMI LCD', res: '400x1280', w: 40.54, h: 129.74 },
+                { model: '10.1" HDMI LCD (E)', res: '1024x600', w: 222.72, h: 125.28 }
+            ],
+            'Nextion': [
+                { model: 'NX3224T024 (2.4" Basic)', res: '320x240', w: 48.96, h: 36.72 },
+                { model: 'NX3224T028 (2.8" Basic)', res: '320x240', w: 57.60, h: 43.20 },
+                { model: 'NX4024T032 (3.2" Basic)', res: '400x240', w: 69.60, h: 41.76 },
+                { model: 'NX4832T035 (3.5" Basic)', res: '480x320', w: 73.44, h: 48.96 },
+                { model: 'NX4827T043 (4.3" Basic)', res: '480x272', w: 95.04, h: 53.86 },
+                { model: 'NX8048T050 (5.0" Basic)', res: '800x480', w: 108.00, h: 64.80 },
+                { model: 'NX8048T070 (7.0" Basic)', res: '800x480', w: 154.08, h: 85.92 },
+                { model: 'NX8048P070 (7.0" Intelli.)', res: '800x480', w: 154.08, h: 85.92 },
+                { model: 'NX1060P101 (10.1" Intelli.)', res: '1024x600', w: 222.72, h: 125.28 }
+            ],
+            'Adafruit': [
+                { model: '0.96" OLED (SSD1306) #326', res: '128x64', w: 21.74, h: 10.86 },
+                { model: '1.3" OLED (SH1107) #938', res: '128x64', w: 29.42, h: 14.70 },
+                { model: '1.44" TFT (ST7735) #2088', res: '128x128', w: 25.50, h: 25.50 },
+                { model: '1.54" IPS TFT (ST7789) #3787', res: '240x240', w: 27.72, h: 27.72 },
+                { model: '1.8" TFT (ST7735) #358', res: '160x128', w: 35.04, h: 28.03 },
+                { model: '2.0" IPS TFT (ST7789) #4311', res: '320x240', w: 40.80, h: 30.60 },
+                { model: '2.4" TFT (ILI9341) #2478', res: '320x240', w: 48.96, h: 36.72 },
+                { model: '2.8" TFT Touch (ILI9341) #1770', res: '320x240', w: 57.60, h: 43.20 },
+                { model: '3.5" TFT Touch (HX8357) #2050', res: '480x320', w: 73.44, h: 48.96 }
+            ],
+            'Raspberry Pi': [
+                { model: 'Official 7" Touch Display', res: '800x480', w: 154.08, h: 85.92 },
+                { model: 'Touch Display 2 (7")', res: '720x1280', w: 86.94, h: 154.56 },
+                { model: 'Touch Display 2 (5")', res: '720x1280', w: 62.10, h: 110.40 },
+                { model: 'HyperPixel 4.0 (Pimoroni)', res: '800x480', w: 86.40, h: 51.84 },
+                { model: 'HyperPixel 4.0 Square', res: '720x720', w: 72.00, h: 72.00 },
+                { model: 'HyperPixel 2.1 Round', res: '480x480', w: 53.28, h: 53.28 }
+            ]
+        };
+
+        function populateBrandSelect() {
+            const sel = document.getElementById('catBrand');
+            const t = i18n[currentLang];
+            sel.innerHTML = '<option value="">-- ' + (t.catSelectBrand || 'Select') + ' --</option>';
+            Object.keys(screenCatalog).forEach(brand => {
+                sel.innerHTML += `<option value="${brand}">${brand}</option>`;
+            });
+            sel.innerHTML += `<option value="__manual__">${t.catManualEntry || 'Manual Entry'}</option>`;
+        }
+
+        function onBrandChange() {
+            const brand = document.getElementById('catBrand').value;
+            const modelSel = document.getElementById('catModel');
+            const manual = document.getElementById('catManual');
+            const t = i18n[currentLang];
+            if (brand === '__manual__') {
+                modelSel.disabled = true;
+                modelSel.innerHTML = '<option value="">--</option>';
+                manual.classList.add('active');
+                hideCatalogPreview();
+                return;
+            }
+            manual.classList.remove('active');
+            if (!brand) { modelSel.disabled = true; modelSel.innerHTML = '<option value="">--</option>'; hideCatalogPreview(); return; }
+            const models = screenCatalog[brand];
+            modelSel.disabled = false;
+            modelSel.innerHTML = '<option value="">-- ' + (t.catSelectModel || 'Select') + ' --</option>';
+            models.forEach((m, i) => { modelSel.innerHTML += `<option value="${i}">${m.model} (${m.res})</option>`; });
+        }
+
+        function onModelChange() {
+            const brand = document.getElementById('catBrand').value;
+            const idx = document.getElementById('catModel').value;
+            if (!brand || idx === '') { hideCatalogPreview(); return; }
+            const m = screenCatalog[brand][parseInt(idx)];
+            showCatalogPreview(m.w, m.h, m.res, m.model);
+        }
+
+        function onManualInput() {
+            const wVal = parseFloat(document.getElementById('catManualW').value);
+            const hVal = parseFloat(document.getElementById('catManualH').value);
+            if (wVal > 0 && hVal > 0) { showCatalogPreview(wVal, hVal, '', T('catCustom')); }
+            else { hideCatalogPreview(); }
+        }
+
+        function showCatalogPreview(mmW, mmH, res, name) {
+            if (pixelPerMm <= 0) return;
+            const pxW = Math.round(mmW * pixelPerMm);
+            const pxH = Math.round(mmH * pixelPerMm);
+            const preview = document.getElementById('catPreview');
+            const container = document.getElementById('catPreviewContainer');
+            const info = document.getElementById('catInfo');
+            const overflow = document.getElementById('catOverflow');
+            const t = i18n[currentLang];
+            preview.style.width = pxW + 'px';
+            preview.style.height = pxH + 'px';
+            document.getElementById('catPreviewRes').textContent = res || '';
+            document.getElementById('catPreviewMm').textContent = mmW.toFixed(1) + ' x ' + mmH.toFixed(1) + ' mm';
+            document.getElementById('catPreviewName').textContent = name;
+            info.classList.add('active');
+            info.innerHTML = (t.catInfo || 'Screen size:') + ' <strong>' + mmW.toFixed(2) + ' x ' + mmH.toFixed(2) + ' mm</strong> = <strong>' + pxW + ' x ' + pxH + ' px</strong> ' + (t.catInfoOnYour || 'on your display');
+            container.classList.add('active');
+            if (pxW > window.innerWidth) { overflow.classList.add('active'); overflow.textContent = t.catOverflowScroll; }
+            else { overflow.classList.remove('active'); }
+        }
+
+        function hideCatalogPreview() {
+            document.getElementById('catPreviewContainer').classList.remove('active');
+            document.getElementById('catInfo').classList.remove('active');
+            document.getElementById('catOverflow').classList.remove('active');
         }
 
         // ---- INIT ----

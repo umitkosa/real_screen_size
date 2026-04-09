@@ -52,17 +52,32 @@ i18n objesi tum ceviri stringlerini icerir. Her dil icin:
 - Renk adlari: colors objesi (sari, beyaz, cyan, kirmizi, yesil her dilde)
 - detectLang(): navigator.language ile otomatik dil algilama, en-US -> 'us'
 
-## Yapilacaklar (Sonraki Oturum)
-### Ekran Katalogu Ozelligi
-Kullanicinin fiziksel ekranini secip PC'de gercek boyutunda onizleme gormesi icin:
-1. Marka > Model dropdown sistemi (4 marka ile baslayacak)
-2. Desteklenecek markalar: Waveshare, Nextion, Adafruit, Raspberry Pi Foundation
-3. Her ekran icin: model adi, cozunurluk, aktif alan mm (datasheet'ten dogrulanmis)
-4. ~30-40 populer ekran modeli
-5. Manuel giris secenegi (kullanici kendi mm degerlerini girer)
-6. Gercek boyutlu onizleme cercevesi: kalibrasyon verisi x aktif alan mm = PC'de gercek boyut
-7. index.html ve calibration.html her zaman senkron tutulmali (ayni dosya)
+## Yeni Ozellikler (v2)
+### Yatay Slider Layout
+- Slider artik yatay, kredi kartinin altinda
+- 1x ve 1/5x butonlari slider'in saginda
+- Default deger: 5.00 px/mm (slider 434px)
 
+### Manuel pixel/mm Girisi
+- Kalibrasyon ekraninda slider'in saginda "Degerimi zaten biliyorum" kutusu
+- Text input (step 0.01) + pixel/mm birimi + ONAYLA butonu
+- Slider kaydikca deger kutusu senkron guncellenir
+- Deger kutusundaki oklar/yazi ile kart ve slider senkron hareket eder
+- Kullanici kredi karti kalibrasyonunu atlayabilir
+
+### Ekran Katalogu (TAMAMLANDI)
+- Result screen'in altinda, kalibrasyon sonrasi gorunur
+- 4 marka: Waveshare (10), Nextion (9), Adafruit (9), Raspberry Pi (6) = 34 ekran
+- Marka > Model dropdown + Manuel giris (kendi mm boyutlari)
+- Gercek boyutlu 1:1 onizleme cercevesi (ASLA kucultme yok)
+- Ekrana sigmayan preview icin yatay scroll
+- 6 dil destegi: TR, EN, US, DE, FR, ES
+
+### Result Screen Scroll Fix
+- body.result-mode class'i ile justify-content: flex-start, min-height: auto
+- Uzun icerik (katalog dahil) sorunsuz scroll edilebilir
+
+## Yapilacaklar (Sonraki Oturum)
 ### Demo Animasyonu
 - demo.html baslandi ama tamamlanmadi
 - Sanal mouse ile tiklama, slider kaydirma animasyonu
