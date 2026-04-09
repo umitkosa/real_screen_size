@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Calibration Tool</title>
+    <style>
+        :root {
+            --accent: #00d4ff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #00d4ff;
+        }
+
+        .subtitle {
+            font-size: 0.94rem;
+            color: #b0b0b0;
+            margin-bottom: 24px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .calibration-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 56px;
+            margin-bottom: 8px;
+        }
+
+        .card-container {
+            position: relative;
+            width: 600px;
+            height: 340px;
+        }
+
+        .credit-card {
+            border: 2px solid #1a6b8a;
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.05);
+            position: absolute;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px #ffcc00;
+        }
+
+        .credit-card::before {
+            content: '';
+            position: absolute;
+            top: 18%;
+            left: 8%;
+            width: 22%;
+            height: 28%;
+            border: 1.5px solid var(--card-detail, rgba(0, 212, 255, 0.3));
+            border-radius: 4px;
+            background: var(--card-detail-bg, rgba(0, 212, 255, 0.08));
+        }
+
+        .credit-card::after {
+            content: '**** **** **** ****';
+            position: absolute;
+            bottom: 22%;
+            left: 8%;
+            font-size: 0.65rem;
+            color: var(--card-detail, rgba(0, 212, 255, 0.3));
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+
+        .card-label {
+            font-size: 0.6rem;
+            color: var(--card-detail, rgba(0, 212, 255, 0.25));
+            position: absolute;
+            top: 8%;
+            right: 6%;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .card-guide-text {
+            position: absolute;
+            top: -24px;
+            left: 0;
+            font-size: 0.8rem;
+            color: #ffcc00;
+            white-space: nowrap;
+            pointer-events: none;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .speed-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .speed-btn {
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: monospace;
+        }
+
+        .speed-btn.active { }
+
+        .speed-btn:hover {
+            border-color: #aaa;
+            color: #ccc;
+        }
+
+        .slider-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 300px;
+            position: relative;
+        }
+
+        .slider-track-line {
+            position: absolute;
+            top: 28px;
+            bottom: 0;
+            left: 50%;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.05));
+            transform: translateX(-50%);
+            border-radius: 1px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .slider-label {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            writing-mode: vertical-lr;
+            direction: rtl;
+            height: 260px;
+            width: 36px;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        input[type="range"]::-webkit-slider-track { width: 6px; background: #333; border-radius: 3px; }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+            background: var(--accent); border: 2px solid var(--accent);
+            box-shadow: 0 0 10px rgba(255,255,255,0.3); cursor: grab;
+        }
+        input[type="range"]::-moz-range-track { width: 6px; background: #333; border-radius: 3px; }
+        input[type="range"]::-moz-range-thumb {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: var(--accent); border: 2px solid var(--accent);
+            box-shadow: 0 0 10px rgba(255,255,255,0.3); cursor: grab;
+        }
+
+        .info-panel { display: flex; gap: 28px; margin-bottom: 10px; font-size: 1rem; }
+        .info-item { text-align: center; }
+        .info-item .label { color: #888; font-size: 0.84rem; margin-bottom: 2px; }
+        .info-item .value { color: #00d4ff; font-weight: bold; font-size: 1.32rem; font-family: monospace; }
+
+        .btn-confirm {
+            padding: 12px 48px; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px;
+            cursor: pointer; background: #00d4ff; color: #1a1a2e; transition: all 0.2s; letter-spacing: 1px;
+        }
+        .btn-confirm:hover { background: #00b8d9; transform: scale(1.03); box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+
+        .result-screen { display: none; text-align: center; align-items: center; flex-direction: column; }
+        .result-screen.active { display: flex; }
+        .calibration-screen.hidden { display: none !important; }
+
+        .result-value { font-size: 3rem; font-weight: bold; color: #00d4ff; font-family: monospace; margin: 16px 0; }
+        .result-unit { font-size: 1rem; color: #888; }
+        .result-details { display: flex; gap: 32px; justify-content: center; margin: 20px 0; font-size: 0.85rem; }
+        .result-details .detail { text-align: center; }
+        .result-details .detail .dlabel { color: #666; font-size: 0.7rem; }
+        .result-details .detail .dvalue { color: #ccc; font-family: monospace; font-size: 1rem; }
+
+        .btn-copy {
+            padding: 10px 32px; font-size: 0.9rem; border: 2px solid #00d4ff; border-radius: 8px;
+            background: transparent; color: #00d4ff; cursor: pointer; margin-top: 16px; transition: all 0.2s;
+        }
+        .btn-copy:hover { background: rgba(0,212,255,0.1); }
+
+        .btn-recalibrate {
+            padding: 8px 24px; font-size: 0.8rem; border: 1px solid #555; border-radius: 6px;
+            background: transparent; color: #888; cursor: pointer; margin-top: 12px; transition: all 0.2s;
+        }
+        .btn-recalibrate:hover { border-color: #888; color: #ccc; }
+
+        .prompt-preview {
+            margin-top: 16px;
+            max-width: 520px;
+            width: 100%;
+            padding: 12px 16px;
+            padding-top: 28px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.7rem;
+            color: #aaa;
+            line-height: 1.5;
+            text-align: left;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .prompt-preview-label {
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 4px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt-copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            padding: 3px 10px;
+            font-size: 0.6rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt-copy-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .prompt-copy-btn.copied {
+            border-color: #00cc66;
+            color: #00cc66;
+        }
+
+        .explanation-box {
+            margin-top: 24px; padding: 16px 24px;
+            border: 1px solid var(--explanation-border, rgba(0,212,255,0.15));
+            border-radius: 8px; background: var(--explanation-bg, rgba(0,212,255,0.04));
+            max-width: 480px; text-align: left;
+        }
+        .explanation-title { font-size: 0.85rem; color: #00d4ff; font-weight: bold; margin-bottom: 8px; }
+        .explanation-text { font-size: 0.78rem; color: #999; line-height: 1.6; }
+        .explanation-text strong { color: #00d4ff; }
+
+        .warning-note {
+            font-size: 0.85rem; color: #ffcc00; font-weight: bold; margin-top: 8px; margin-bottom: 16px; text-align: center;
+            padding: 8px 20px; border: 1px solid rgba(255,204,0,0.3); border-radius: 6px; background: rgba(255,204,0,0.08);
+        }
+        .instructions { font-size: 0.75rem; color: #666; margin-top: 8px; text-align: center; line-height: 1.6; }
+
+        .style-panel {
+            display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; margin-top: -43px;
+            padding: 12px 20px; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; background: rgba(255,255,255,0.03);
+        }
+        .style-row { display: flex; align-items: center; gap: 12px; }
+        .style-label { font-size: 0.9rem; color: #888; min-width: 72px; }
+
+        .theme-btn {
+            width: 43px; height: 29px; border-radius: 5px; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.2s; position: relative; overflow: hidden;
+        }
+        .theme-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; }
+        .theme-btn.active { border-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.3); }
+        .theme-btn:hover { transform: scale(1.1); }
+        .theme-btn-dark-blue { background: #1a1a2e; }
+        .theme-btn-dark-blue::after { background: #00d4ff; }
+        .theme-btn-black { background: #000000; }
+        .theme-btn-black::after { background: #333; }
+
+        .color-dot {
+            width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .color-dot:hover { transform: scale(1.2); }
+        .color-dot.active { border-color: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.4); }
+
+        .flag {
+            display: inline-block;
+            width: 19px;
+            height: 13px;
+            border-radius: 2px;
+            vertical-align: middle;
+            margin-right: 2px;
+        }
+        .flag {
+            background-size: cover;
+            background-position: center;
+        }
+        .flag-en { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Crect fill='%23012169' width='60' height='30'/%3E%3Cpath d='M0,0 L60,30 M60,0 L0,30' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M0,0 L60,30 M60,0 L0,30' stroke='%23C8102E' stroke-width='2'/%3E%3Cpath d='M30,0 V30 M0,15 H60' stroke='%23fff' stroke-width='10'/%3E%3Cpath d='M30,0 V30 M0,15 H60' stroke='%23C8102E' stroke-width='6'/%3E%3C/svg%3E"); }
+        .flag-us { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Crect fill='%23fff' width='60' height='30'/%3E%3Cg fill='%23B22234'%3E%3Crect y='0' width='60' height='2.3'/%3E%3Crect y='4.6' width='60' height='2.3'/%3E%3Crect y='9.2' width='60' height='2.3'/%3E%3Crect y='13.8' width='60' height='2.3'/%3E%3Crect y='18.5' width='60' height='2.3'/%3E%3Crect y='23.1' width='60' height='2.3'/%3E%3Crect y='27.7' width='60' height='2.3'/%3E%3C/g%3E%3Crect fill='%233C3B6E' width='24' height='16'/%3E%3C/svg%3E"); }
+        .flag-tr { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'%3E%3Crect fill='%23E30A17' width='1200' height='800'/%3E%3Ccircle cx='425' cy='400' r='200' fill='%23fff'/%3E%3Ccircle cx='475' cy='400' r='160' fill='%23E30A17'/%3E%3Cpolygon points='583.3,400 667.5,326.4 624.6,416.6 710.9,365 611.1,387.5 710.9,435 624.6,383.4 667.5,473.6 583.3,400' fill='%23fff' transform='translate(20,0)'/%3E%3C/svg%3E"); }
+        .flag-de { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Crect fill='%23000' width='60' height='10'/%3E%3Crect y='10' fill='%23DD0000' width='60' height='10'/%3E%3Crect y='20' fill='%23FFCC00' width='60' height='10'/%3E%3C/svg%3E"); }
+        .flag-es { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 30'%3E%3Crect fill='%23AA151B' width='60' height='30'/%3E%3Crect y='7.5' fill='%23F1BF00' width='60' height='15'/%3E%3C/svg%3E"); }
+
+        .lang-btn {
+            padding: 4px 10px; font-size: 0.84rem; font-weight: bold; border: 1px solid #555;
+            border-radius: 4px; background: transparent; color: #888; cursor: pointer; transition: all 0.2s;
+        }
+        .lang-btn.active { border-color: var(--accent); color: var(--accent); }
+        .lang-btn:hover { border-color: #aaa; color: #ccc; }
+
+        .credit-footer {
+            font-size: 0.65rem;
+            color: #555;
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        .copy-toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: #00d4ff; color: #1a1a2e; padding: 10px 24px; border-radius: 8px;
+            font-weight: bold; font-size: 0.85rem; transition: transform 0.3s ease; z-index: 100;
+        }
+        .copy-toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <!-- Calibration Screen -->
+    <div class="calibration-screen" id="calibrationScreen" style="display: flex; flex-direction: column; align-items: center;">
+        <h1 id="t_title"></h1>
+        <p class="subtitle" id="t_subtitle"></p>
+
+        <div class="calibration-area">
+            <div class="card-container">
+                <div class="credit-card" id="creditCard">
+                    <span class="card-label">ISO 7810</span>
+                </div>
+                <div class="card-guide-text" id="cardGuideText"></div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-wrapper">
+                    <span class="slider-label" id="t_size"></span>
+                    <div class="slider-track-line"></div>
+                    <input type="range" id="sizeSlider" min="150" max="600" value="320" step="1">
+                </div>
+                <div class="speed-buttons">
+                    <button class="speed-btn active" id="btn1x" onclick="setSpeed(1)">1x</button>
+                    <button class="speed-btn" id="btn5x" onclick="setSpeed(0.2)">1/5x</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-panel">
+            <div class="style-row">
+                <span class="style-label" id="t_theme"></span>
+                <div class="theme-btn theme-btn-dark-blue active" onclick="applyTheme('dark-blue')"></div>
+                <div class="theme-btn theme-btn-black" onclick="applyTheme('black')"></div>
+            </div>
+            <div class="style-row" id="colorPicker"></div>
+            <div class="style-row">
+                <span class="style-label" id="t_langLabel"></span>
+                <button class="lang-btn" onclick="setLang('en')"><span class="flag flag-en"></span> EN</button>
+                <button class="lang-btn" onclick="setLang('us')" style="position:relative"><span class="flag flag-us"></span> US<span style="position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);font-size:0.5rem;color:#999;font-weight:normal">inch</span></button>
+                <button class="lang-btn" onclick="setLang('tr')"><span class="flag flag-tr"></span> TR</button>
+                <button class="lang-btn" onclick="setLang('de')"><span class="flag flag-de"></span> DE</button>
+                <button class="lang-btn" onclick="setLang('es')"><span class="flag flag-es"></span> ES</button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="label" id="t_width"></div>
+                <div class="value" id="pxWidth">320</div>
+            </div>
+            <div class="info-item">
+                <div class="label" id="t_height"></div>
+                <div class="value" id="pxHeight">202</div>
+            </div>
+            <div class="info-item">
+                <div class="label" id="t_target"></div>
+                <div class="value" style="color: #888; font-size: 0.8rem;">85.6 x 53.98 mm</div>
+            </div>
+        </div>
+
+        <p class="warning-note" id="t_warning"></p>
+
+        <button class="btn-confirm" id="btnConfirm" onclick="confirmCalibration()"></button>
+
+        <p class="instructions">ISO/IEC 7810 ID-1: 85.6mm x 53.98mm</p>
+        <p class="credit-footer">Prepared by Umit KOSA</p>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" id="resultScreen">
+        <h1 id="t_resultTitle"></h1>
+        <p class="subtitle" id="t_resultSubtitle"></p>
+
+        <div class="result-value" id="resultRatio">-</div>
+        <div class="result-unit">pixel / mm</div>
+
+        <div class="result-details">
+            <div class="detail">
+                <div class="dlabel" id="t_cardW"></div>
+                <div class="dvalue" id="resultPxW">-</div>
+            </div>
+            <div class="detail">
+                <div class="dlabel" id="t_cardH"></div>
+                <div class="dvalue" id="resultPxH">-</div>
+            </div>
+            <div class="detail">
+                <div class="dlabel">mm / pixel</div>
+                <div class="dvalue" id="resultMmPerPx">-</div>
+            </div>
+        </div>
+
+        <button class="btn-copy" onclick="copyResult()" id="t_copyBtn"></button>
+        <br>
+        <button class="btn-recalibrate" onclick="recalibrate()" id="t_recalBtn"></button>
+
+        <div class="prompt-preview">
+            <button class="prompt-copy-btn" id="promptCopyBtn" onclick="copyPromptFromBox()">Copy</button>
+            <div class="prompt-preview-label" id="t_promptLabel">Claude Code Prompt:</div>
+            <div id="promptText"></div>
+        </div>
+
+        <div class="explanation-box">
+            <p class="explanation-title" id="t_explTitle"></p>
+            <p class="explanation-text" id="t_explText"></p>
+        </div>
+
+        <p class="credit-footer">Prepared by Umit KOSA</p>
+    </div>
+
+    <div class="copy-toast" id="copyToast"></div>
+
+    <script>
+        const CARD_WIDTH_MM = 85.6;
+        const CARD_HEIGHT_MM = 53.98;
+        const ASPECT_RATIO = CARD_WIDTH_MM / CARD_HEIGHT_MM;
+        const FRAME_TOTAL = 6;
+
+        const slider = document.getElementById('sizeSlider');
+        const creditCard = document.getElementById('creditCard');
+        const pxWidthEl = document.getElementById('pxWidth');
+        const pxHeightEl = document.getElementById('pxHeight');
+
+        let currentWidthPx = 320;
+        let pixelPerMm = 0;
+        let speed = 1;
+        let baseWidth = 320;
+        const SLIDER_MID = (150 + 600) / 2;
+        let currentTheme = 'dark-blue';
+        let currentLang = 'tr';
+        let currentColorName = '';
+
+        // ---- TRANSLATIONS ----
+        const i18n = {
+            tr: {
+                title: 'Ekran Kalibrasyon Araci',
+                subtitle: (c) => `Kredi kartinizi cercevenin icine yerlestirin ve slider ile boyutu ayarlayin.<br><span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> cizgi, kartinizin dis kenarinin hizalanacagi cercevedir.<br><span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> cizgi cok az gorunecek sekilde kartinizi yerlestirin.`,
+                guideText: (name) => `Kartinizin sol ve ust kenarlarini ${name} cizginin icine hizalayin`,
+                size: 'Boyut',
+                theme: 'Tema:',
+                frame: 'Cerceve:',
+                lang: 'Dil:',
+                widthPx: 'Genislik (px)',
+                heightPx: 'Yukseklik (px)',
+                target: 'Hedef',
+                confirm: 'ONAYLA',
+                warning: 'ONEMLI: Web tarayicinizin yakinlastirma oraninin %100 oldugundan emin olun! (Ctrl + 0)',
+                resultTitle: 'Kalibrasyon Tamamlandi!',
+                resultSubtitle: 'Asagidaki butonla sizin icin otomatik hazirlanan Claude promptunu kopyalayin ve Claude Code\'a yapisitirin.',
+                cardW: 'Kart Genisligi (px)',
+                cardH: 'Kart Yuksekligi (px)',
+                copyBtn: 'Claude Code\'a Kopyala',
+                recalBtn: 'Tekrar Kalibre Et',
+                explTitle: 'Bu deger ne anlama geliyor?',
+                explText: (v) => `Bu deger, ekraninizda 1 milimetrenin kac piksele karsilik geldigini gosterir. Ornegin <strong>${v}</strong> demek, ekraninizdaki her 1mm icinde yaklasik <strong>${v}</strong> piksel var demektir.<br><br>Bu sayede Claude, sizin icin tasarladiginiz ekranlarin gercek boyutlarini bilgisayar ekraninizda birebir gosterebilir. Artik "bu buton 10mm olsun" dediginizde, gercekten 10mm olacak!<br><br>Bu degeri Claude Code'a bildirdiginizde, bundan sonraki tum UI projeleriniz (Nextion, Raspberry Pi, vb.) gercek ekraninizin mm olculerine birebir uygun sekilde tasarlanacaktir. Tek seferlik bir kalibrasyon, sinirsiz hassasiyet!`,
+                copied: 'Kopyalandi!',
+                prompt: (ppm, mpp, w, h, ex) => `Ekran kalibrasyonum: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Bundan sonra bana mm cinsinden boyut verdigimde veya bir ekran icin UI tasarladigimda, bu pixel/mm oranini kullanarak ekranimdaki gercek boyutlari hesapla. Ornegin 10mm = ${ex}px benim ekranimda.`,
+                colors: { sari: 'Sari', beyaz: 'Beyaz', cyan: 'Cyan', kirmizi: 'Kirmizi', yesil: 'Yesil' }
+            },
+            en: {
+                title: 'Screen Calibration Tool',
+                subtitle: (c) => `Place your credit card inside the frame and adjust the size with the slider.<br>The <span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> line is the frame where your card edge should align.<br>Place your card so the <span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> line is barely visible.`,
+                guideText: (name) => `Align your card's left and top edges inside the ${name} line`,
+                size: 'Size',
+                theme: 'Theme:',
+                frame: 'Frame:',
+                lang: 'Lang:',
+                widthPx: 'Width (px)',
+                heightPx: 'Height (px)',
+                target: 'Target',
+                confirm: 'CONFIRM',
+                warning: 'IMPORTANT: Make sure your browser zoom is set to 100%! (Ctrl + 0)',
+                resultTitle: 'Calibration Complete!',
+                resultSubtitle: 'Copy the auto-generated Claude prompt below and paste it into Claude Code.',
+                cardW: 'Card Width (px)',
+                cardH: 'Card Height (px)',
+                copyBtn: 'Copy to Claude Code',
+                recalBtn: 'Recalibrate',
+                explTitle: 'What does this value mean?',
+                explText: (v) => `This value shows how many pixels correspond to 1 millimeter on your screen. For example, <strong>${v}</strong> means there are approximately <strong>${v}</strong> pixels per 1mm on your display.<br><br>This allows Claude to show the real dimensions of the screens you design on your computer display. When you say "make this button 10mm", it will actually be 10mm!<br><br>Once you share this value with Claude Code, all your future UI projects (Nextion, Raspberry Pi, etc.) will be designed to match the exact mm dimensions of your real screen. One-time calibration, unlimited precision!`,
+                copied: 'Copied!',
+                prompt: (ppm, mpp, w, h, ex) => `My screen calibration: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. From now on, when I give you dimensions in mm or when designing UI for a screen, use this pixel/mm ratio to calculate real sizes on my display. For example 10mm = ${ex}px on my screen.`,
+                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' }
+            },
+            us: {
+                title: 'Screen Calibration Tool',
+                subtitle: (c) => `Place your credit card inside the frame and adjust the size with the slider.<br>The <span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> line is the frame where your card edge should align.<br>Place your card so the <span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> line is barely visible.`,
+                guideText: (name) => `Align your card's left and top edges inside the ${name} line`,
+                size: 'Size',
+                theme: 'Theme:',
+                frame: 'Frame:',
+                lang: 'Lang:',
+                widthPx: 'Width (px)',
+                heightPx: 'Height (px)',
+                target: 'Target',
+                confirm: 'CONFIRM',
+                warning: 'IMPORTANT: Make sure your browser zoom is set to 100%! (Ctrl + 0)',
+                resultTitle: 'Calibration Complete!',
+                resultSubtitle: 'Copy the auto-generated Claude prompt below and paste it into Claude Code.',
+                cardW: 'Card Width (px)',
+                cardH: 'Card Height (px)',
+                copyBtn: 'Copy to Claude Code',
+                recalBtn: 'Recalibrate',
+                explTitle: 'What does this value mean?',
+                explText: (v) => `This value shows how many pixels correspond to 1 millimeter on your screen. For example, <strong>${v}</strong> means there are approximately <strong>${v}</strong> pixels per 1mm on your display.<br><br>This allows Claude to show the real dimensions of the screens you design on your computer display. When you say "make this button 0.4 inches", it will actually be 0.4 inches!<br><br>Once you share this value with Claude Code, all your future UI projects (Nextion, Raspberry Pi, etc.) will be designed to match the exact dimensions of your real screen. One-time calibration, unlimited precision!`,
+                copied: 'Copied!',
+                prompt: (ppm, mpp, w, h, ex) => {
+                    const ppi = (parseFloat(ppm) * 25.4).toFixed(2);
+                    const pixPerInch = ppi;
+                    return `My screen calibration: pixel/mm: ${ppm}, pixel/inch: ${pixPerInch}, mm/pixel: ${mpp}, card: ${w}x${h}px. I use inches as my unit. From now on, when I give you dimensions in inches or when designing UI for a screen, use this pixel/inch ratio to calculate real sizes on my display. For example 1 inch = ${pixPerInch}px on my screen, 0.5 inch = ${(pixPerInch/2).toFixed(0)}px.`;
+                },
+                colors: { sari: 'Yellow', beyaz: 'White', cyan: 'Cyan', kirmizi: 'Red', yesil: 'Green' }
+            },
+            de: {
+                title: 'Bildschirm-Kalibrierungstool',
+                subtitle: (c) => `Legen Sie Ihre Kreditkarte in den Rahmen und passen Sie die Groesse mit dem Schieberegler an.<br>Die <span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> Linie ist der Rahmen, an dem Ihre Kartenkante ausgerichtet werden soll.<br>Platzieren Sie Ihre Karte so, dass die <span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> Linie kaum sichtbar ist.`,
+                guideText: (name) => `Linke und obere Kartenkante an der ${name} Linie ausrichten`,
+                size: 'Groesse',
+                theme: 'Thema:',
+                frame: 'Rahmen:',
+                lang: 'Sprache:',
+                widthPx: 'Breite (px)',
+                heightPx: 'Hoehe (px)',
+                target: 'Ziel',
+                confirm: 'BESTAETIGEN',
+                warning: 'WICHTIG: Stellen Sie sicher, dass der Browser-Zoom auf 100% eingestellt ist! (Strg + 0)',
+                resultTitle: 'Kalibrierung abgeschlossen!',
+                resultSubtitle: 'Kopieren Sie den automatisch erstellten Claude-Prompt und fuegen Sie ihn in Claude Code ein.',
+                cardW: 'Kartenbreite (px)',
+                cardH: 'Kartenhoehe (px)',
+                copyBtn: 'In Claude Code kopieren',
+                recalBtn: 'Neu kalibrieren',
+                explTitle: 'Was bedeutet dieser Wert?',
+                explText: (v) => `Dieser Wert zeigt, wie viele Pixel 1 Millimeter auf Ihrem Bildschirm entsprechen. Zum Beispiel bedeutet <strong>${v}</strong>, dass es ungefaehr <strong>${v}</strong> Pixel pro 1mm auf Ihrem Display gibt.<br><br>So kann Claude die realen Abmessungen der Bildschirme, die Sie entwerfen, auf Ihrem Computerbildschirm originalgetreu darstellen.<br><br>Sobald Sie diesen Wert mit Claude Code teilen, werden alle Ihre zukuenftigen UI-Projekte (Nextion, Raspberry Pi usw.) exakt an die mm-Masse Ihres realen Bildschirms angepasst. Einmalige Kalibrierung, unbegrenzte Praezision!`,
+                copied: 'Kopiert!',
+                prompt: (ppm, mpp, w, h, ex) => `Meine Bildschirmkalibrierung: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Verwende ab jetzt dieses pixel/mm-Verhaeltnis, wenn ich dir mm-Masse gebe oder UI fuer einen Bildschirm entwerfe. Beispiel: 10mm = ${ex}px auf meinem Bildschirm.`,
+                colors: { sari: 'Gelb', beyaz: 'Weiss', cyan: 'Cyan', kirmizi: 'Rot', yesil: 'Gruen' }
+            },
+            fr: {
+                title: 'Outil de Calibration d\'Ecran',
+                subtitle: (c) => `Placez votre carte de credit dans le cadre et ajustez la taille avec le curseur.<br>La ligne <span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> est le cadre ou le bord de votre carte doit s'aligner.<br>Placez votre carte pour que la ligne <span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> soit a peine visible.`,
+                guideText: (name) => `Alignez les bords gauche et superieur de votre carte sur la ligne ${name}`,
+                size: 'Taille',
+                theme: 'Theme:',
+                frame: 'Cadre:',
+                lang: 'Langue:',
+                widthPx: 'Largeur (px)',
+                heightPx: 'Hauteur (px)',
+                target: 'Cible',
+                confirm: 'CONFIRMER',
+                warning: 'IMPORTANT: Assurez-vous que le zoom de votre navigateur est a 100% ! (Ctrl + 0)',
+                resultTitle: 'Calibration terminee !',
+                resultSubtitle: 'Partagez la valeur ci-dessous avec Claude Code.',
+                cardW: 'Largeur carte (px)',
+                cardH: 'Hauteur carte (px)',
+                copyBtn: 'Copier pour Claude Code',
+                recalBtn: 'Recalibrer',
+                explTitle: 'Que signifie cette valeur ?',
+                explText: (v) => `Cette valeur indique combien de pixels correspondent a 1 millimetre sur votre ecran. Par exemple, <strong>${v}</strong> signifie qu'il y a environ <strong>${v}</strong> pixels par 1mm sur votre affichage.<br><br>Cela permet a Claude d'afficher les dimensions reelles des ecrans que vous concevez. Quand vous dites "ce bouton fait 10mm", il fera vraiment 10mm !<br><br>Une fois cette valeur partagee avec Claude Code, tous vos futurs projets UI (Nextion, Raspberry Pi, etc.) seront concus aux dimensions mm exactes de votre ecran reel. Une calibration unique, une precision illimitee !`,
+                copied: 'Copie !',
+                prompt: (ppm, mpp, w, h, ex) => `Ma calibration d'ecran: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. Desormais, quand je donne des dimensions en mm ou conçois une UI pour un ecran, utilise ce ratio pixel/mm pour calculer les tailles reelles. Exemple: 10mm = ${ex}px sur mon ecran.`,
+                colors: { sari: 'Jaune', beyaz: 'Blanc', cyan: 'Cyan', kirmizi: 'Rouge', yesil: 'Vert' }
+            },
+            es: {
+                title: 'Herramienta de Calibracion de Pantalla',
+                subtitle: (c) => `Coloque su tarjeta de credito dentro del marco y ajuste el tamano con el control deslizante.<br>La linea <span id="colorNameInSubtitle" style="color:${c.clr};font-weight:bold">${c.name}</span> es el marco donde debe alinearse el borde de su tarjeta.<br>Coloque su tarjeta para que la linea <span id="colorNameInSubtitle2" style="color:${c.clr};font-weight:bold">${c.name}</span> sea apenas visible.`,
+                guideText: (name) => `Alinee los bordes izquierdo y superior de su tarjeta con la linea ${name}`,
+                size: 'Tamano',
+                theme: 'Tema:',
+                frame: 'Marco:',
+                lang: 'Idioma:',
+                widthPx: 'Ancho (px)',
+                heightPx: 'Alto (px)',
+                target: 'Objetivo',
+                confirm: 'CONFIRMAR',
+                warning: 'IMPORTANTE: Asegurese de que el zoom del navegador este al 100%! (Ctrl + 0)',
+                resultTitle: 'Calibracion completada!',
+                resultSubtitle: 'Copie el prompt de Claude generado automaticamente y peguelo en Claude Code.',
+                cardW: 'Ancho tarjeta (px)',
+                cardH: 'Alto tarjeta (px)',
+                copyBtn: 'Copiar para Claude Code',
+                recalBtn: 'Recalibrar',
+                explTitle: 'Que significa este valor?',
+                explText: (v) => `Este valor muestra cuantos pixeles corresponden a 1 milimetro en su pantalla. Por ejemplo, <strong>${v}</strong> significa que hay aproximadamente <strong>${v}</strong> pixeles por 1mm en su pantalla.<br><br>Esto permite a Claude mostrar las dimensiones reales de las pantallas que disena. Cuando dice "este boton debe ser de 10mm", realmente sera de 10mm!<br><br>Una vez que comparta este valor con Claude Code, todos sus futuros proyectos UI (Nextion, Raspberry Pi, etc.) se disenaran con las medidas mm exactas de su pantalla real. Una calibracion, precision ilimitada!`,
+                copied: 'Copiado!',
+                prompt: (ppm, mpp, w, h, ex) => `Mi calibracion de pantalla: pixel/mm: ${ppm}, mm/pixel: ${mpp}, card: ${w}x${h}px. A partir de ahora, cuando doy dimensiones en mm o diseno UI para una pantalla, usa esta relacion pixel/mm para calcular tamanos reales. Ejemplo: 10mm = ${ex}px en mi pantalla.`,
+                colors: { sari: 'Amarillo', beyaz: 'Blanco', cyan: 'Cian', kirmizi: 'Rojo', yesil: 'Verde' }
+            }
+        };
+
+        // ---- THEMES ----
+        const themes = {
+            'dark-blue': {
+                bg: '#1a1a2e', cardBg: 'rgba(0,212,255,0.05)', outerBorder: '#1a6b8a', accent: '#00d4ff',
+                chipBorder: 'rgba(0,212,255,0.3)', chipBg: 'rgba(0,212,255,0.08)',
+                frameColors: [
+                    { color: '#ffcc00', key: 'sari' }, { color: '#ffffff', key: 'beyaz' },
+                    { color: '#00d4ff', key: 'cyan' }, { color: '#ff4444', key: 'kirmizi' },
+                    { color: '#00ff88', key: 'yesil' }
+                ]
+            },
+            'black': {
+                bg: '#000000', cardBg: '#1a1a1a', outerBorder: '#333333', accent: '#ffffff',
+                chipBorder: 'rgba(255,255,255,0.2)', chipBg: 'rgba(255,255,255,0.05)',
+                frameColors: [
+                    { color: '#ffffff', key: 'beyaz' }, { color: '#ffcc00', key: 'sari' },
+                    { color: '#00d4ff', key: 'cyan' }, { color: '#ff6b6b', key: 'kirmizi' },
+                    { color: '#88ff88', key: 'yesil' }
+                ]
+            }
+        };
+
+        // ---- LANGUAGE ----
+        function detectLang() {
+            const full = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+            if (full === 'en-us') return 'us';
+            const bl = full.slice(0, 2);
+            return i18n[bl] ? bl : 'en';
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('.lang-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent.trim().endsWith(lang.toUpperCase()));
+            });
+            applyTranslations();
+        }
+
+        function T(key) { return i18n[currentLang][key]; }
+
+        function getColorName(key) {
+            return i18n[currentLang].colors[key] || key;
+        }
+
+        function applyTranslations() {
+            const t = themes[currentTheme];
+            const fc = t.frameColors[0];
+            const activeColor = currentColorName || fc.key;
+            const activeDot = document.querySelector('.color-dot.active');
+            const activeClr = activeDot ? activeDot.style.background : fc.color;
+            const colorName = getColorName(activeColor);
+
+            document.getElementById('t_title').textContent = T('title');
+            document.getElementById('t_subtitle').innerHTML = T('subtitle')({ clr: activeClr, name: colorName });
+            document.getElementById('cardGuideText').textContent = T('guideText')(colorName);
+            document.getElementById('t_size').textContent = T('size');
+            document.getElementById('t_theme').textContent = T('theme');
+            document.getElementById('t_langLabel').textContent = T('lang');
+            document.getElementById('t_width').textContent = T('widthPx');
+            document.getElementById('t_height').textContent = T('heightPx');
+            document.getElementById('t_target').textContent = T('target');
+            document.getElementById('btnConfirm').textContent = T('confirm');
+            document.getElementById('t_warning').textContent = T('warning');
+
+            // Result screen
+            document.getElementById('t_resultTitle').textContent = T('resultTitle');
+            document.getElementById('t_resultSubtitle').textContent = T('resultSubtitle');
+            document.getElementById('t_cardW').textContent = T('cardW');
+            document.getElementById('t_cardH').textContent = T('cardH');
+            document.getElementById('t_copyBtn').textContent = T('copyBtn');
+            document.getElementById('t_recalBtn').textContent = T('recalBtn');
+            document.getElementById('t_explTitle').textContent = T('explTitle');
+
+            const v = pixelPerMm > 0 ? pixelPerMm.toFixed(2) : '3.74';
+            document.getElementById('t_explText').innerHTML = T('explText')(v);
+
+            document.getElementById('copyToast').textContent = T('copied');
+
+            // Render color picker label
+            renderColorPicker(t.frameColors);
+
+            document.title = T('title');
+        }
+
+        // ---- THEME ----
+        function applyTheme(themeName) {
+            currentTheme = themeName;
+            const t = themes[themeName];
+
+            document.documentElement.style.setProperty('--accent', t.accent);
+            document.documentElement.style.setProperty('--card-detail', t.chipBorder);
+            document.documentElement.style.setProperty('--card-detail-bg', t.chipBg);
+            const isBlack = themeName === 'black';
+            document.documentElement.style.setProperty('--explanation-border', isBlack ? 'rgba(255,255,255,0.15)' : 'rgba(0,212,255,0.15)');
+            document.documentElement.style.setProperty('--explanation-bg', isBlack ? 'rgba(255,255,255,0.04)' : 'rgba(0,212,255,0.04)');
+
+            document.body.style.background = t.bg;
+            creditCard.style.background = t.cardBg;
+            creditCard.style.borderColor = t.outerBorder;
+
+            document.querySelector('h1').style.color = t.accent;
+            document.querySelectorAll('.info-item .value').forEach(el => {
+                if (!el.style.color || el.style.color !== 'rgb(136, 136, 136)') el.style.color = t.accent;
+            });
+            document.querySelector('.btn-confirm').style.background = t.accent;
+            document.querySelector('.btn-confirm').style.color = t.bg;
+
+            document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.theme-btn-' + themeName).classList.add('active');
+
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                if (btn.classList.contains('active')) {
+                    btn.style.borderColor = t.accent;
+                    btn.style.color = t.accent;
+                    btn.style.background = isBlack ? 'rgba(255,255,255,0.1)' : 'rgba(0,212,255,0.1)';
+                } else { btn.style.borderColor = ''; btn.style.color = ''; btn.style.background = ''; }
+            });
+
+            pxWidthEl.style.color = t.accent;
+            pxHeightEl.style.color = t.accent;
+
+            renderColorPicker(t.frameColors);
+            setFrameColor(t.frameColors[0].color, t.frameColors[0].key);
+        }
+
+        function renderColorPicker(frameColors) {
+            const picker = document.getElementById('colorPicker');
+            const label = `<span class="style-label">${T('frame')}</span>`;
+            const dots = frameColors.map((fc, i) => {
+                const isActive = currentColorName ? fc.key === currentColorName : i === 0;
+                return `<div class="color-dot${isActive ? ' active' : ''}" style="background: ${fc.color};" onclick="setFrameColor('${fc.color}', '${fc.key}', this)" title="${getColorName(fc.key)}"></div>`;
+            }).join('');
+            picker.innerHTML = label + dots;
+        }
+
+        function setFrameColor(color, key, el) {
+            currentColorName = key;
+            creditCard.style.boxShadow = 'inset 0 0 0 1px ' + color;
+
+            const name = getColorName(key);
+            document.getElementById('cardGuideText').textContent = T('guideText')(name);
+            document.getElementById('cardGuideText').style.color = color;
+
+            // Update subtitle color names
+            const t = themes[currentTheme];
+            document.getElementById('t_subtitle').innerHTML = T('subtitle')({ clr: color, name: name });
+
+            if (el) {
+                document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                el.classList.add('active');
+            }
+        }
+
+        // ---- SLIDER & CARD ----
+        function updateCard() {
+            const sliderVal = parseInt(slider.value);
+            if (speed === 1) { currentWidthPx = sliderVal; }
+            else {
+                currentWidthPx = Math.round(baseWidth + (sliderVal - SLIDER_MID) * speed);
+                currentWidthPx = Math.max(150, Math.min(600, currentWidthPx));
+            }
+            const innerWidth = currentWidthPx - FRAME_TOTAL;
+            const innerHeight = Math.round(innerWidth / ASPECT_RATIO);
+            const heightPx = innerHeight + FRAME_TOTAL;
+            creditCard.style.width = currentWidthPx + 'px';
+            creditCard.style.height = heightPx + 'px';
+            pxWidthEl.textContent = innerWidth;
+            pxHeightEl.textContent = innerHeight;
+        }
+
+        function setSpeed(newSpeed) {
+            if (newSpeed === speed) return;
+            if (newSpeed === 0.2) { baseWidth = currentWidthPx; slider.value = SLIDER_MID; }
+            else { slider.value = currentWidthPx; }
+            speed = newSpeed;
+            const t = themes[currentTheme];
+            const btn1x = document.getElementById('btn1x');
+            const btn5x = document.getElementById('btn5x');
+            btn1x.classList.toggle('active', speed === 1);
+            btn5x.classList.toggle('active', speed === 0.2);
+            btn1x.style.borderColor = speed === 1 ? t.accent : '';
+            btn1x.style.color = speed === 1 ? t.accent : '';
+            btn5x.style.borderColor = speed === 0.2 ? t.accent : '';
+            btn5x.style.color = speed === 0.2 ? t.accent : '';
+            updateCard();
+        }
+
+        slider.addEventListener('input', updateCard);
+        slider.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+                e.preventDefault(); slider.value = Math.min(parseInt(slider.value) + 1, parseInt(slider.max)); updateCard();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+                e.preventDefault(); slider.value = Math.max(parseInt(slider.value) - 1, parseInt(slider.min)); updateCard();
+            }
+        });
+
+        function confirmCalibration() {
+            const innerW = currentWidthPx - FRAME_TOTAL;
+            const innerH = Math.round(innerW / ASPECT_RATIO);
+            pixelPerMm = innerW / CARD_WIDTH_MM;
+            const mmPerPixel = CARD_WIDTH_MM / innerW;
+
+            document.getElementById('resultRatio').textContent = pixelPerMm.toFixed(4);
+            document.getElementById('resultPxW').textContent = innerW;
+            document.getElementById('resultPxH').textContent = innerH;
+            document.getElementById('resultMmPerPx').textContent = mmPerPixel.toFixed(4);
+
+            applyTranslations(); // Update explanation with real value
+
+            const t = themes[currentTheme];
+            document.querySelector('.result-screen h1').style.color = t.accent;
+            document.getElementById('resultRatio').style.color = t.accent;
+            document.querySelector('.btn-copy').style.borderColor = t.accent;
+            document.querySelector('.btn-copy').style.color = t.accent;
+            document.querySelector('.explanation-title').style.color = t.accent;
+            document.querySelectorAll('.explanation-text strong').forEach(s => s.style.color = t.accent);
+
+            // Prompt preview
+            const innerWw = currentWidthPx - FRAME_TOTAL;
+            const innerHh = Math.round(innerWw / ASPECT_RATIO);
+            const mmpx = CARD_WIDTH_MM / innerWw;
+            const exx = (pixelPerMm * 10).toFixed(0);
+            document.getElementById('promptText').textContent = T('prompt')(pixelPerMm.toFixed(4), mmpx.toFixed(4), innerWw, innerHh, exx);
+
+            document.getElementById('calibrationScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('active');
+        }
+
+        function copyResult() {
+            const innerW = currentWidthPx - FRAME_TOTAL;
+            const innerH = Math.round(innerW / ASPECT_RATIO);
+            const mmPerPixel = CARD_WIDTH_MM / innerW;
+            const ex = (pixelPerMm * 10).toFixed(0);
+
+            const text = T('prompt')(pixelPerMm.toFixed(4), mmPerPixel.toFixed(4), innerW, innerH, ex);
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('copyToast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            });
+        }
+
+        function copyPromptFromBox() {
+            const text = document.getElementById('promptText').textContent;
+            const btn = document.getElementById('promptCopyBtn');
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = T('copied');
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function recalibrate() {
+            document.getElementById('calibrationScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.remove('active');
+        }
+
+        // ---- INIT ----
+        updateCard();
+        currentLang = detectLang();
+        applyTheme('dark-blue');
+        setLang(currentLang);
+    </script>
+</body>
+</html>
